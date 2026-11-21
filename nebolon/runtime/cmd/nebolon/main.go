@@ -5,14 +5,18 @@
 //
 // Usage:
 //
-//	nebolon execute --flow <path> --node <id> [--block-library <path>] [--output <path>] [--lib-runtime <path>]
+//	nebolon                                               — interactive mode
+//	nebolon execute --flow <path> --node <id> [flags]     — execute a node
+//	nebolon help                                          — show help
 package main
 
 import (
 	"flag"
 	"fmt"
 	"os"
+	"strings"
 
+	"nebolon/runtime/internal/cli"
 	"nebolon/runtime/internal/execution"
 	"nebolon/runtime/internal/flow"
 )
@@ -28,16 +32,57 @@ func main() {
 
 func run(args []string) error {
 	if len(args) == 0 {
-		return fmt.Errorf("no command provided. Available commands: execute")
+		return runInteractive("", "")
 	}
 
 	switch args[0] {
+	case "help", "--help", "-help", "-h":
+		fmt.Print(helpText)
+		return nil
 	case "execute":
 		return runExecute(args[1:])
 	default:
-		return fmt.Errorf("unknown command %q. Available commands: execute", args[0])
+		if strings.HasPrefix(args[0], "-") {
+			fs := flag.NewFlagSet("nebolon", flag.ContinueOnError)
+			fs.SetOutput(os.Stderr)
+			blockLibrary := fs.String("block-library", "", "Path to the block library directory")
+			libRuntime := fs.String("lib-runtime", "", "Path to the nebolon-lib-runtime binary")
+			if err := fs.Parse(args); err == nil {
+				return runInteractive(*blockLibrary, *libRuntime)
+			}
+		}
+		return fmt.Errorf("unknown command %q. Run 'nebolon help' for usage.", args[0])
 	}
 }
+
+func runInteractive(libraryRoot, libRuntime string) error {
+	fmt.Println("Nebolon Flow CLI")
+	fmt.Println("Type /help for available commands.")
+
+	libRoot := cli.ResolveLibraryRoot(libraryRoot)
+	libRun := cli.ResolveLibRuntime(libRuntime)
+
+	session := cli.NewSession(libRoot, libRun)
+	return cli.RunREPL(session, os.Stdin, os.Stdout)
+}
+
+const helpText = `Nebolon Runtime CLI
+
+Usage:
+  nebolon                                            Start interactive flow editor
+  nebolon execute --flow <path> --node <id> [flags]  Execute a single node
+  nebolon help                                       Show this help text
+
+Execute flags:
+  --flow <path>           Path to the input .flow file (required)
+  --node <id>             ID of the node to execute (required)
+  --block-library <path>  Path to the block library directory (default: block-library)
+  --output <path>         Path to write the updated .flow file (default: stdout)
+  --lib-runtime <path>    Path to the nebolon-lib-runtime binary (optional)
+
+Interactive commands (type /help inside the CLI for details):
+  /create  /load  /save  /show  /block-add  /blocks  /exec  /help  /exit
+`
 
 func runExecute(args []string) error {
 	fs := flag.NewFlagSet("execute", flag.ContinueOnError)

@@ -84,3 +84,23 @@ func Load(libraryRoot, blockType string) (BlockDefinition, error) {
 
 	return def, nil
 }
+
+// Discover scans libraryRoot and returns a list of available block types.
+// A block type is identified by a directory containing a <blockType>.block file.
+func Discover(libraryRoot string) ([]string, error) {
+	entries, err := os.ReadDir(libraryRoot)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read block library %q: %w", libraryRoot, err)
+	}
+	var types []string
+	for _, e := range entries {
+		if !e.IsDir() {
+			continue
+		}
+		blockFile := filepath.Join(libraryRoot, e.Name(), e.Name()+".block")
+		if _, err := os.Stat(blockFile); err == nil {
+			types = append(types, e.Name())
+		}
+	}
+	return types, nil
+}
