@@ -6,6 +6,7 @@ package flow
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 )
 
 // Position describes a node's location on the canvas.
@@ -68,4 +69,56 @@ func (fm FlowMap) FindNode(id string) (Node, bool) {
 		}
 	}
 	return Node{}, false
+}
+
+// New creates a new FlowMap with the given human-readable name.
+func New(name string) FlowMap {
+	id := strings.ToLower(strings.ReplaceAll(strings.TrimSpace(name), " ", "-"))
+	if id == "" {
+		id = "flow"
+	}
+	return FlowMap{
+		ID:          id,
+		Name:        name,
+		Version:     "1",
+		Nodes:       []Node{},
+		Connections: []Connection{},
+	}
+}
+
+// NextNodeID returns the next unique node ID for the given block type.
+// It iterates <blockType>-1, <blockType>-2, ... until an unused ID is found.
+func (fm FlowMap) NextNodeID(blockType string) string {
+	for i := 1; ; i++ {
+		candidate := fmt.Sprintf("%s-%d", blockType, i)
+		if _, exists := fm.FindNode(candidate); !exists {
+			return candidate
+		}
+	}
+}
+
+// AddNode adds a new block node to the FlowMap with a unique ID.
+// If pos is nil, a default canvas position is assigned based on the current node count.
+func (fm *FlowMap) AddNode(blockType string, pos *Position) Node {
+	var position Position
+	if pos != nil {
+		position = *pos
+	} else {
+		n := len(fm.Nodes)
+		position = Position{
+			X: float64(100 + n*220),
+			Y: 100,
+		}
+	}
+
+	node := Node{
+		ID:       fm.NextNodeID(blockType),
+		Type:     blockType,
+		Position: position,
+		Config:   map[string]any{},
+		Status:   "idle",
+	}
+
+	fm.Nodes = append(fm.Nodes, node)
+	return node
 }

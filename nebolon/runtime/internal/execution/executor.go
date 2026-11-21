@@ -61,6 +61,25 @@ func (e *Executor) Execute(fm flow.FlowMap, nodeID string) (flow.FlowMap, error)
 	return updated, nil
 }
 
+// ExecuteFlow executes all nodes in fm sequentially, returning an updated FlowMap.
+// The original fm is never modified.
+func (e *Executor) ExecuteFlow(fm flow.FlowMap) (flow.FlowMap, error) {
+	current, err := deepCopy(fm)
+	if err != nil {
+		return flow.FlowMap{}, fmt.Errorf("failed to copy flow map: %w", err)
+	}
+
+	for _, node := range current.Nodes {
+		updated, err := e.Execute(current, node.ID)
+		if err != nil {
+			return flow.FlowMap{}, fmt.Errorf("error executing node %q: %w", node.ID, err)
+		}
+		current = updated
+	}
+
+	return current, nil
+}
+
 // deepCopy produces a fully independent copy of a FlowMap via JSON round-trip.
 func deepCopy(fm flow.FlowMap) (flow.FlowMap, error) {
 	data, err := json.Marshal(fm)

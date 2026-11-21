@@ -214,3 +214,41 @@ func TestExecute_UpdatedFlowMapContainsResult(t *testing.T) {
 		t.Errorf("non-executed node hello2 status should remain %q, got %q", "idle", n2.Status)
 	}
 }
+
+// TestExecuteFlow_AllNodes verifies that ExecuteFlow runs all nodes in order
+// and returns an updated FlowMap while leaving the original untouched.
+func TestExecuteFlow_AllNodes(t *testing.T) {
+	lib := newLibrary(t)
+	ex := execution.New(lib, execution.StubInvoker{})
+
+	fm := flow.FlowMap{
+		ID:      "multi-node-flow",
+		Version: "1",
+		Nodes: []flow.Node{
+			{ID: "node1", Type: "hello-world", Config: map[string]any{}, Status: "idle"},
+			{ID: "node2", Type: "hello-world", Config: map[string]any{}, Status: "idle"},
+		},
+		Connections: []flow.Connection{},
+	}
+
+	updated, err := ex.ExecuteFlow(fm)
+	if err != nil {
+		t.Fatalf("unexpected error from ExecuteFlow: %v", err)
+	}
+
+	// Verify original is untouched
+	if fm.Nodes[0].Status != "idle" || fm.Nodes[1].Status != "idle" {
+		t.Error("original FlowMap nodes were mutated")
+	}
+
+	// Verify updated has results on both nodes
+	n1, found1 := updated.FindNode("node1")
+	if !found1 || n1.Status != "failed" || n1.Outputs == nil {
+		t.Errorf("expected node1 to be updated with failed status, got: %+v", n1)
+	}
+
+	n2, found2 := updated.FindNode("node2")
+	if !found2 || n2.Status != "failed" || n2.Outputs == nil {
+		t.Errorf("expected node2 to be updated with failed status, got: %+v", n2)
+	}
+}

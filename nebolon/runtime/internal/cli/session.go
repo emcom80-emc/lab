@@ -90,13 +90,7 @@ func (s *Session) cmdCreate(args []string) (string, error) {
 		return "", fmt.Errorf("usage: /create <name>")
 	}
 	name := strings.Join(args, " ")
-	s.fm = flow.FlowMap{
-		ID:          sanitizeID(name),
-		Name:        name,
-		Version:     "1",
-		Nodes:       []flow.Node{},
-		Connections: []flow.Connection{},
-	}
+	s.fm = flow.New(name)
 	s.hasFM = true
 	s.filePath = ""
 	s.counter = 0
@@ -171,29 +165,8 @@ func (s *Session) cmdBlockAdd(args []string) (string, error) {
 		return "", err
 	}
 
-	// Generate a unique node ID.
-	var nodeID string
-	for {
-		s.counter++
-		nodeID = fmt.Sprintf("%s-%d", blockType, s.counter)
-		if _, exists := s.fm.FindNode(nodeID); !exists {
-			break
-		}
-	}
-
-	n := len(s.fm.Nodes)
-	pos := flow.Position{
-		X: float64(100 + n*220),
-		Y: 100,
-	}
-	node := flow.Node{
-		ID:       nodeID,
-		Type:     blockType,
-		Position: pos,
-		Config:   map[string]any{},
-		Status:   "idle",
-	}
-	s.fm.Nodes = append(s.fm.Nodes, node)
+	// Add node through the FlowMap domain model.
+	s.fm.AddNode(blockType, nil)
 	return marshalFlow(s.fm)
 }
 
@@ -241,16 +214,12 @@ func (s *Session) cmdExec(args []string) (string, error) {
 		return marshalFlow(s.fm)
 	}
 
-	// Execute all nodes in order.
-	current := s.fm
-	for _, node := range s.fm.Nodes {
-		updated, err := ex.Execute(current, node.ID)
-		if err != nil {
-			return "", fmt.Errorf("error executing node %q: %w", node.ID, err)
-		}
-		current = updated
+	// Execute the entire flow using the Execution engine.
+	updated, err := ex.ExecuteFlow(s.fm)
+	if err != nil {
+		return "", err
 	}
-	s.fm = current
+	s.fm = updated
 	return marshalFlow(s.fm)
 }
 
