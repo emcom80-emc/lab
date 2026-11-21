@@ -1,0 +1,23 @@
+{
+  "id": "hello-flow",
+  "name": "Hello World Flow",
+  "version": "1",
+  "nodes": [
+    {
+      "id": "hello1",
+      "type": "hello-world",
+      "position": {
+        "x": 100,
+        "y": 100
+      },
+      "config": {},
+      "status": "succeeded",
+      "outputs": {
+        "fail": false,
+        "message": "Hello, World!",
+        "success": true
+      }
+    }
+  ],
+  "connections": []
+}

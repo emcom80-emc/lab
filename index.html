@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab Portal | Home</title>
+    <link rel="stylesheet" href="common.css">
+</head>
+<body>
+
+    <!-- Site Header & Navigation Bar -->
+    <header class="site-header">
+        <div class="container navbar">
+            <a href="#home" class="nav-brand">
+                <span class="brand-badge">◆</span> LabPortal
+            </a>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="#home" class="nav-link active">Home</a></li>
+                    <li><a href="#help" class="nav-link">Help</a></li>
+                    <li><a href="#contact" class="nav-link">Contact</a></li>
+                    <li><a href="#about" class="nav-link">About</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <!-- Division: Home -->
+        <section id="home" class="section hero">
+            <div class="container">
+                <span class="badge mb-md">Dark Blue Edition</span>
+                <h1>Welcome to <span class="hero-gradient-text">LabPortal</span></h1>
+                <p>
+                    A modern, responsive platform featuring a classic division layout. 
+                    Explore our services, access comprehensive help resources, or get in touch with our team.
+                </p>
+                <div class="hero-actions">
+                    <a href="#about" class="btn btn-primary">Learn More</a>
+                    <a href="#contact" class="btn btn-secondary">Get in Touch</a>
+                </div>
+
+                <div class="grid grid-3 mt-lg">
+                    <div class="card text-left">
+                        <div class="card-icon">⚡</div>
+                        <h3>High Performance</h3>
+                        <p>Lightweight CSS architecture engineered for fast loading times and smooth rendering across devices.</p>
+                    </div>
+                    <div class="card text-left">
+                        <div class="card-icon">🎨</div>
+                        <h3>Dark Blue Theme</h3>
+                        <p>Carefully balanced contrast with deep navy backgrounds and bright sky blue accents for reduced eye fatigue.</p>
+                    </div>
+                    <div class="card text-left">
+                        <div class="card-icon">🧩</div>
+                        <h3>Modular Structure</h3>
+                        <p>Easily extensible components and layouts ready for upcoming feature rollouts and custom views.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Division: Help -->
+        <section id="help" class="section section-alt">
+            <div class="container">
+                <div class="section-header">
+                    <span class="badge mb-sm">Support & Resources</span>
+                    <h2>Help Center</h2>
+                    <p>Find answers to common questions, documentation, and technical support guides.</p>
+                </div>
+
+                <div class="grid grid-3">
+                    <div class="card text-left">
+                        <div class="card-icon">📖</div>
+                        <h3>Documentation</h3>
+                        <p>Comprehensive setup guides, API specifications, and workflow integration manuals.</p>
+                        <a href="#help" class="text-accent mt-sm" style="display: inline-block;">Read Docs &rarr;</a>
+                    </div>
+                    <div class="card text-left">
+                        <div class="card-icon">❓</div>
+                        <h3>FAQs</h3>
+                        <p>Quick answers to frequently asked questions about authentication, theming, and system settings.</p>
+                        <a href="#help" class="text-accent mt-sm" style="display: inline-block;">Browse FAQs &rarr;</a>
+                    </div>
+                    <div class="card text-left">
+                        <div class="card-icon">🛠️</div>
+                        <h3>Troubleshooting</h3>
+                        <p>Diagnostic tips and issue resolution paths to keep your workspace running without interruptions.</p>
+                        <a href="#help" class="text-accent mt-sm" style="display: inline-block;">View Guide &rarr;</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Division: Contact -->
+        <section id="contact" class="section">
+            <div class="container">
+                <div class="section-header">
+                    <span class="badge mb-sm">Get in Touch</span>
+                    <h2>Contact Us</h2>
+                    <p>Have questions, project inquiries, or feedback? Send us a message or reach out directly.</p>
+                </div>
+
+                <div class="contact-layout">
+                    <!-- Contact Info -->
+                    <div class="card text-left">
+                        <h3>Reach Out Directly</h3>
+                        <p class="mb-md">We are here to assist you. Our support engineers typically reply within 24 hours.</p>
+                        
+                        <ul class="contact-info-list">
+                            <li class="contact-info-item">
+                                <span class="card-icon" style="margin: 0; min-width: 44px;">✉️</span>
+                                <div>
+                                    <div class="item-title">Email</div>
+                                    <p>support@labportal.example</p>
+                                </div>
+                            </li>
+                            <li class="contact-info-item">
+                                <span class="card-icon" style="margin: 0; min-width: 44px;">📍</span>
+                                <div>
+                                    <div class="item-title">Location</div>
+                                    <p>Main Tech Hub, Stockholm / Remote</p>
+                                </div>
+                            </li>
+                            <li class="contact-info-item">
+                                <span class="card-icon" style="margin: 0; min-width: 44px;">⏱️</span>
+                                <div>
+                                    <div class="item-title">Availability</div>
+                                    <p>Monday – Friday, 09:00 – 18:00 CET</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Contact Form -->
+                    <div class="card text-left">
+                        <form onsubmit="event.preventDefault(); alert('Thank you! Your message has been received.');">
+                            <div class="form-group">
+                                <label for="contact-name">Full Name</label>
+                                <input type="text" id="contact-name" placeholder="Jane Doe" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="contact-email">Email Address</label>
+                                <input type="email" id="contact-email" placeholder="jane@example.com" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="contact-subject">Topic</label>
+                                <select id="contact-subject">
+                                    <option value="general">General Inquiry</option>
+                                    <option value="help">Technical Support</option>
+                                    <option value="feedback">Feedback & Suggestions</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="contact-message">Message</label>
+                                <textarea id="contact-message" rows="4" placeholder="How can we help you?" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="width: 100%;">Send Message</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Division: About -->
+        <section id="about" class="section section-alt">
+            <div class="container">
+                <div class="section-header">
+                    <span class="badge mb-sm">Who We Are</span>
+                    <h2>About Us</h2>
+                    <p>Building clean, reliable web experiences with an emphasis on craftsmanship and user focus.</p>
+                </div>
+
+                <div class="grid grid-2 text-left">
+                    <div class="card">
+                        <h3>Our Mission</h3>
+                        <p class="mb-md">
+                            Our laboratory environment is dedicated to rapid experimentation and development of modern web applications. 
+                            We prioritize clarity, high performance, and accessible design in everything we build.
+                        </p>
+                        <p>
+                            With each iteration, we ensure that our styles and component structures remain robust, clean, and ready for upcoming features.
+                        </p>
+                    </div>
+                    <div class="card">
+                        <h3>Key Highlights</h3>
+                        <ul class="contact-info-list" style="margin-top: 0;">
+                            <li class="contact-info-item">
+                                <span class="card-icon" style="margin: 0; min-width: 44px;">🚀</span>
+                                <div>
+                                    <div class="item-title">Zero Dependency Setup</div>
+                                    <p>Pure HTML5 and modern CSS custom properties without unnecessary bloat.</p>
+                                </div>
+                            </li>
+                            <li class="contact-info-item">
+                                <span class="card-icon" style="margin: 0; min-width: 44px;">🎯</span>
+                                <div>
+                                    <div class="item-title">Accessibility First</div>
+                                    <p>Optimal contrast ratios and semantic landmarks across all divisions.</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Site Footer -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div>
+                    <span class="brand-badge">◆</span> <strong>LabPortal</strong>
+                    <p class="text-muted" style="font-size: 0.85rem; margin-top: 0.25rem;">Classic division homepage in dark blue theme.</p>
+                </div>
+                <ul class="footer-nav">
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#help">Help</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                    <li><a href="#about">About</a></li>
+                </ul>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 LabPortal. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Interactive Navigation Active State Observer -->
+    <script>
+        const sections = document.querySelectorAll('section[id]');
+        const navLinks = document.querySelectorAll('.nav-link');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            const scrollY = window.pageYOffset;
+
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop - 100;
+                const sectionHeight = section.offsetHeight;
+                if (scrollY >= sectionTop && scrollY < sectionTop + sectionHeight) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

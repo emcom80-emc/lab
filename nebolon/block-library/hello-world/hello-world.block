@@ -1,0 +1,17 @@
+{
+  "id": "hello-world",
+  "name": "Hello World",
+  "description": "A simple block that outputs a hello world message.",
+  "category": "examples",
+  "outputs": {
+    "message": {
+      "type": "string",
+      "description": "The hello world message produced by the block."
+    }
+  },
+  "implementation": {
+    "type": "process",
+    "language": "go",
+    "path": "block-library/hello-world"
+  }
+}

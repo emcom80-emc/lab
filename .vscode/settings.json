@@ -1,0 +1,6 @@
+{
+  "files.associations": {
+    "*.flow": "json",
+    "*.block": "json"
+  }
+}
