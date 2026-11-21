@@ -12,6 +12,6 @@
   "implementation": {
     "type": "process",
     "language": "go",
-    "path": "block-library/hello-world"
+    "path": "block-libraries/hello-world"
   }
 }

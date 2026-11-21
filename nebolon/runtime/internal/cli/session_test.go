@@ -198,6 +198,41 @@ func TestSave_UpdatesFilePath(t *testing.T) {
 	}
 }
 
+func TestSave_AppendsFlowExtension(t *testing.T) {
+	s := newSession(t)
+	mustCommand(t, s, "/create ExtTest")
+	dir := t.TempDir()
+	base := filepath.Join(dir, "demo")
+	expected := base + ".flow"
+	out := mustCommand(t, s, "/save "+base)
+	if !strings.Contains(out, expected) {
+		t.Errorf("expected output to mention %q, got %q", expected, out)
+	}
+	if _, err := os.Stat(expected); err != nil {
+		t.Fatalf("expected file %q to exist, err: %v", expected, err)
+	}
+	// Subsequent /save without args should use expected path
+	out2 := mustCommand(t, s, "/save")
+	if !strings.Contains(out2, expected) {
+		t.Errorf("expected /save without args to reuse %q, got %q", expected, out2)
+	}
+}
+
+func TestSave_KeepsExistingFlowExtension(t *testing.T) {
+	s := newSession(t)
+	mustCommand(t, s, "/create ExtTest2")
+	dir := t.TempDir()
+	path := filepath.Join(dir, "demo.flow")
+	out := mustCommand(t, s, "/save "+path)
+	if !strings.Contains(out, path) {
+		t.Errorf("expected output to mention %q, got %q", path, out)
+	}
+	// Make sure it didn't become demo.flow.flow
+	if strings.Contains(out, "demo.flow.flow") {
+		t.Errorf("unexpected double extension: %q", out)
+	}
+}
+
 func TestSave_ErrorWithNoPath(t *testing.T) {
 	s := newSession(t)
 	mustCommand(t, s, "/create NoPath")

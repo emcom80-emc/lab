@@ -16,12 +16,13 @@ import (
 	"os"
 	"strings"
 
+	"nebolon/runtime/internal/blocks"
 	"nebolon/runtime/internal/cli"
 	"nebolon/runtime/internal/execution"
 	"nebolon/runtime/internal/flow"
 )
 
-const defaultLibraryRoot = "block-library"
+const defaultLibraryRoot = blocks.DefaultLibraryRoot
 
 func main() {
 	if err := run(os.Args[1:]); err != nil {
@@ -90,7 +91,7 @@ func runExecute(args []string) error {
 
 	flowPath := fs.String("flow", "", "Path to the input .flow file (required)")
 	nodeID := fs.String("node", "", "ID of the node to execute (required)")
-	libraryRoot := fs.String("block-library", defaultLibraryRoot, "Path to the block library directory")
+	libraryRoot := fs.String("block-library", "", "Path to the block library directory")
 	outputPath := fs.String("output", "", "Path to write the updated .flow file (defaults to stdout)")
 	libRuntimePath := fs.String("lib-runtime", "", "Path to the nebolon-lib-runtime binary (optional; uses stub invoker if not set)")
 
@@ -104,6 +105,8 @@ func runExecute(args []string) error {
 	if *nodeID == "" {
 		return fmt.Errorf("--node is required")
 	}
+
+	resolvedLibRoot := cli.ResolveLibraryRoot(*libraryRoot)
 
 	// Read the input flow map. File I/O is handled here, not in the engine.
 	flowData, err := os.ReadFile(*flowPath)
@@ -119,7 +122,7 @@ func runExecute(args []string) error {
 	// Choose invoker based on flags.
 	var inv execution.Invoker = execution.StubInvoker{}
 	if *libRuntimePath != "" {
-		libInvoker, err := execution.NewLibraryRuntimeInvoker(*libRuntimePath, *libraryRoot)
+		libInvoker, err := execution.NewLibraryRuntimeInvoker(*libRuntimePath, resolvedLibRoot)
 		if err != nil {
 			return fmt.Errorf("failed to start lib-runtime: %w", err)
 		}
@@ -128,7 +131,7 @@ func runExecute(args []string) error {
 	}
 
 	// Execute the requested node using the Runtime engine.
-	ex := execution.New(*libraryRoot, inv)
+	ex := execution.New(resolvedLibRoot, inv)
 	updated, err := ex.Execute(fm, *nodeID)
 	if err != nil {
 		return err

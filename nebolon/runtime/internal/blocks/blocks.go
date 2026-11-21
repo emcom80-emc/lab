@@ -63,6 +63,9 @@ var StandardOutputs = map[string]Port{
 	},
 }
 
+// DefaultLibraryRoot is the default directory name for block libraries.
+const DefaultLibraryRoot = "block-libraries"
+
 // Load reads and parses the block definition for blockType from the given
 // library root directory. The expected file path is:
 //
@@ -90,6 +93,9 @@ func Load(libraryRoot, blockType string) (BlockDefinition, error) {
 func Discover(libraryRoot string) ([]string, error) {
 	entries, err := os.ReadDir(libraryRoot)
 	if err != nil {
+		if os.IsNotExist(err) {
+			return nil, fmt.Errorf("block library directory %q not found: %w", libraryRoot, err)
+		}
 		return nil, fmt.Errorf("failed to read block library %q: %w", libraryRoot, err)
 	}
 	var types []string
@@ -103,4 +109,78 @@ func Discover(libraryRoot string) ([]string, error) {
 		}
 	}
 	return types, nil
+}
+
+// ResolveLibraryRoot determines the block library path.
+// If explicit is non-empty, it is used verbatim (override).
+// Otherwise, it resolves "block-libraries" relative to the Nebolon installation.
+func ResolveLibraryRoot(explicit string) string {
+	return ResolveLibraryRootFrom(explicit, "")
+}
+
+// ResolveLibraryRootFrom resolves the block library path given an optional installation base directory.
+// If baseDir is empty, the directory of os.Executable() is used.
+func ResolveLibraryRootFrom(explicit, baseDir string) string {
+	if explicit != "" {
+		return explicit
+	}
+
+	// 1. Determine installation directory.
+	installDir := baseDir
+	if installDir == "" {
+		if exe, err := os.Executable(); err == nil {
+			if evaled, err := filepath.EvalSymlinks(exe); err == nil {
+				exe = evaled
+			}
+			installDir = filepath.Dir(exe)
+		}
+	}
+
+	if installDir != "" {
+		candidates := []string{
+			filepath.Join(installDir, "..", DefaultLibraryRoot),
+			filepath.Join(installDir, DefaultLibraryRoot),
+			filepath.Join(installDir, "..", "..", DefaultLibraryRoot),
+			filepath.Join(installDir, "..", "block-library"),
+			filepath.Join(installDir, "block-library"),
+		}
+		for _, cand := range candidates {
+			if fi, err := os.Stat(cand); err == nil && fi.IsDir() {
+				if abs, err := filepath.Abs(cand); err == nil {
+					return abs
+				}
+				return cand
+			}
+		}
+	}
+
+	// 2. Check NEBOLON_HOME if set.
+	if home := os.Getenv("NEBOLON_HOME"); home != "" {
+		cand := filepath.Join(home, DefaultLibraryRoot)
+		if fi, err := os.Stat(cand); err == nil && fi.IsDir() {
+			if abs, err := filepath.Abs(cand); err == nil {
+				return abs
+			}
+			return cand
+		}
+	}
+
+	// 3. Fallback for working directory and parents (e.g. tests or go run).
+	cwdCandidates := []string{
+		DefaultLibraryRoot,
+		filepath.Join("..", DefaultLibraryRoot),
+		filepath.Join("..", "..", DefaultLibraryRoot),
+		"block-library",
+		filepath.Join("..", "block-library"),
+	}
+	for _, cand := range cwdCandidates {
+		if fi, err := os.Stat(cand); err == nil && fi.IsDir() {
+			if abs, err := filepath.Abs(cand); err == nil {
+				return abs
+			}
+			return cand
+		}
+	}
+
+	return DefaultLibraryRoot
 }

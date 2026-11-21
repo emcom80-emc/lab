@@ -32,14 +32,15 @@ import (
 func main() {
 	fs := flag.NewFlagSet("nebolon-lib-runtime", flag.ContinueOnError)
 	fs.SetOutput(os.Stderr)
-	libraryRoot := fs.String("block-library", "block-library", "Path to the block library directory")
+	libraryRoot := fs.String("block-library", "", "Path to the block library directory")
 
 	if err := fs.Parse(os.Args[1:]); err != nil {
 		fmt.Fprintf(os.Stderr, "nebolon-lib-runtime: flag error: %v\n", err)
 		os.Exit(1)
 	}
 
-	if err := serve(os.Stdin, os.Stdout, *libraryRoot); err != nil {
+	resolvedLibRoot := blocks.ResolveLibraryRoot(*libraryRoot)
+	if err := serve(os.Stdin, os.Stdout, resolvedLibRoot); err != nil {
 		fmt.Fprintf(os.Stderr, "nebolon-lib-runtime: fatal: %v\n", err)
 		os.Exit(1)
 	}

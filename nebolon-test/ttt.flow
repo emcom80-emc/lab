@@ -1,0 +1,19 @@
+{
+  "id": "nn2",
+  "name": "nn2",
+  "version": "1",
+  "nodes": [
+    {
+      "id": "hello-world-1",
+      "type": "hello-world",
+      "position": {
+        "x": 100,
+        "y": 100
+      },
+      "config": {},
+      "status": "idle",
+      "outputs": null
+    }
+  ],
+  "connections": []
+}

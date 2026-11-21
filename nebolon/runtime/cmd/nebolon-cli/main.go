@@ -11,10 +11,11 @@ import (
 	"fmt"
 	"os"
 
+	"nebolon/runtime/internal/blocks"
 	"nebolon/runtime/internal/cli"
 )
 
-const defaultLibraryRoot = "block-library"
+const defaultLibraryRoot = blocks.DefaultLibraryRoot
 
 func main() {
 	blockLibrary := flag.String("block-library", "", "Path to the block library directory")

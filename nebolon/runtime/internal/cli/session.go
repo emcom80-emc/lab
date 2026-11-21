@@ -129,7 +129,11 @@ func (s *Session) cmdSave(args []string) (string, error) {
 		return "", err
 	}
 	if len(args) > 0 {
-		s.filePath = args[0]
+		path := args[0]
+		if !strings.HasSuffix(strings.ToLower(path), ".flow") {
+			path += ".flow"
+		}
+		s.filePath = path
 	}
 	if s.filePath == "" {
 		return "", fmt.Errorf("no file path set — use /save <file>")
@@ -303,18 +307,10 @@ func sanitizeID(name string) string {
 }
 
 // ResolveLibraryRoot finds the block library directory.
-// If explicit is non-empty, it is used. Otherwise it checks common relative paths.
+// ResolveLibraryRoot finds the block library directory using the centralized blocks logic.
+// If explicit is non-empty, it is used verbatim. Otherwise it resolves relative to the installation.
 func ResolveLibraryRoot(explicit string) string {
-	if explicit != "" {
-		return explicit
-	}
-	if info, err := os.Stat("block-library"); err == nil && info.IsDir() {
-		return "block-library"
-	}
-	if info, err := os.Stat("../block-library"); err == nil && info.IsDir() {
-		return "../block-library"
-	}
-	return "block-library"
+	return blocks.ResolveLibraryRoot(explicit)
 }
 
 // ResolveLibRuntime finds the nebolon-lib-runtime binary if available.
