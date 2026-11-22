@@ -151,12 +151,21 @@ func (s *Session) cmdShow() (string, error) {
 }
 
 // cmdBlockAdd loads a block definition and adds a node to the current flow map.
+// With no arguments, it lists the available blocks with usage instructions.
 func (s *Session) cmdBlockAdd(args []string) (string, error) {
+	if len(args) == 0 {
+		types, err := blocks.Discover(s.LibraryRoot)
+		if err != nil {
+			return "", err
+		}
+		if len(types) == 0 {
+			return "no block types found in " + s.LibraryRoot, nil
+		}
+		return fmt.Sprintf("available blocks:\n  %s\n\nusage: /block-add <block-id>", strings.Join(types, "\n  ")), nil
+	}
+
 	if err := s.requireFlow(); err != nil {
 		return "", err
-	}
-	if len(args) == 0 {
-		return "", fmt.Errorf("usage: /block-add <block-id>")
 	}
 	blockType := args[0]
 
@@ -232,7 +241,7 @@ func (s *Session) cmdHelp() string {
   /save                Save current flow map to the current file path
   /save <file>         Save current flow map to <file>
   /show                Print current flow map as JSON
-  /block-add <id>      Add a node of block type <id> to the current flow map
+  /block-add [id]      Add a node of block type [id], or list available blocks
   /blocks              List available block types from the block library
   /exec                Execute all nodes in the current flow map
   /exec <node-id>      Execute a specific node by ID

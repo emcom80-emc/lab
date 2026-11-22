@@ -334,6 +334,20 @@ func TestBlockAdd_ErrorWithNoFlowMap(t *testing.T) {
 	}
 }
 
+func TestBlockAdd_NoArgsListsAvailableBlocks(t *testing.T) {
+	s := newSession(t)
+	out := mustCommand(t, s, "/block-add")
+	if !strings.Contains(out, "available blocks:") {
+		t.Errorf("expected output to contain 'available blocks:', got: %s", out)
+	}
+	if !strings.Contains(out, "hello-world") {
+		t.Errorf("expected output to contain 'hello-world', got: %s", out)
+	}
+	if !strings.Contains(out, "usage: /block-add <block-id>") {
+		t.Errorf("expected output to contain usage hint, got: %s", out)
+	}
+}
+
 func TestBlocks_ListsAvailableBlockTypes(t *testing.T) {
 	lib := t.TempDir()
 	// Add two block types.
